@@ -1,0 +1,45 @@
+* Gordon, M.D - 4/1/2006
+* reverse the lines in a file starting from the current line for the rest of the file or a number of lines
+* on the command line
+* Reverse *      *** reverses all the lines from here forward
+* Reverse 10     *** reverses the next 10 lines
+
+arg lines
+
+inputmode = inputmode.1()
+
+curlineno = line.1()
+"SET INPUTMODE OFF"
+
+
+if line.1() > 0 then start = line.1()
+else start = 1
+
+
+if datatype(lines,"W") then
+do
+   endln = start + lines - 1
+   if endln > size.1() then endln = size.1()
+end
+else endln = size.1()
+
+odd = (endln - start) // 2
+
+reversed = 0
+do while start < endln
+   ":"start
+   startline = curline.3()
+   ":"endln
+   endline = curline.3()
+
+   "REPLACE" startline
+   ":"start
+   "REPLACE" endline
+   endln = endln - 1
+   start = start + 1
+   reversed = reversed + 2
+end
+"SET INPUTMODE" inputmode
+":"curlineno
+"MSG RVSE001I" reversed "Lines Changed"
+exit
