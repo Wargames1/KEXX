@@ -1,0 +1,86 @@
+******************************************************************************
+* suck.kex - mdg 6/20/96 - Delete blanks at the cursor to pull a string over.*
+*                          ...Or grab the last word and put it at the cursor.*
+*  Enhancements                                                              *
+*     6/21/96 - If executed on a non blank, delete until the first blank     *
+*     7/30/96 - If no blanks to the left, then place the last word on the    *
+*         line at the cursor location                                        *
+* Designed to be assigned to a function key or middle mouse button.          *
+******************************************************************************
+* Legal Stuff:
+*
+* MIT License
+* Copyright (c) 2024 Gordon, M.D. https://gofund.me/a04e971f  
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+
+* The above copyright notice, and this permission notice shall be included in all* 
+* copies or substantial portions of the Software.
+
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+*
+
+if curline.3() = "" then return
+
+cursorline = line.1()
+physical_row = cursor.1()
+physical_col = cursor.2()
+
+file_col = col.1()
+"CURSOR CMDLINE"
+cmdline_lineno = line.1()
+
+"CURSOR" physical_row physical_col
+
+"LOCATE :"cursorline
+line = curline.3()
+
+left = left(line, file_col - 1)
+rest = ""
+right = substr(line, file_col, )
+
+if right = "" then /* find first word and push to file_col */
+do
+   if words(line) > 0 then
+   do
+      left = left(left(line, wordindex(line, words(line)) - 1), file_col - 1)
+      rest = word(line, words(line))
+   end
+end
+else
+do
+   if left(right,1) = " " then /* Suck characters */
+      rest = strip(right, "Leading")
+  *
+  *else /* Suck alpha */
+  *   if pos(" ", right) > 0 then
+  *      rest = substr(right, pos(" ", right))
+  *   else
+  *      rest = ""
+end
+line = left || rest
+
+if line = "" then
+do
+  "DELETE 1"
+  "LOCATE -1"
+  "ADD 1"
+end
+else
+   "REPLACE" line
+if pos("WINDOWS", version.1()) = 0 then
+   physical_row = physical_row - 1
+"LOCATE :"cmdline_lineno
+"CURSOR" physical_row physical_col
+exit
