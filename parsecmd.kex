@@ -1,0 +1,88 @@
+* parsecmd.kex - MDG - 9/11/95 - Parse the current line into
+*  into variables and execute a command using the interpreter to process
+*  those variables.  See help for the PARSE instruction for the format
+*  of the parse_spec.
+*
+* This useful but difficult-to-use utility requires a Rexx command processor.
+*
+* Format: parse /parse_spec/ command
+* ======
+* Where:  /          is a character to delimit the command line arguments,
+* =====              any non-blank character may be used in place of '/'.
+*         parse_spec tells how to break up the current line, strings
+*                    in quotes are delimiters, things outside are variables
+*                    Blanks must surround delimited strings and variable names.
+*         command    Command to execute
+*
+*
+* Example:
+*   curline is:
+*    1 + 23 = 104
+* ====>parsecmd /z '+' z1 "=" s/"input " z1" plus "z" equals "z1+z" NOT" s"."
+*   produces:
+*     23  plus     1  equals 24 NOT  104.
+*
+* Usage:
+*          Avoid using x and b as variable names since the interpreter may
+*          take it to mean a hexedecimal conversion as in '12'x or '10'b,
+*          (unless this is your intention).
+*
+*          If at first you're command doesn't succeed, undo and try,try, again.
+*
+*          See the description of the rexx/kexx parse command for more info.
+*
+*          Combinations of rexx, kexx, and external environment command may
+*          be used in the command portion.
+*
+*          This macro may be called from another macro to simplify the user
+*          interface.
+*
+*/
+parse arg sep +1 getspec (sep) command
+
+if sep = "?" | sep = "" | getspec = "" | command = "" then
+do
+   "MSG" "parsecmd: format: parsecmd /<parse values>/ command"
+   exit
+end
+
+"MSG" "parsecmd.kex - MDG - 7/25/97 - Use parse to execute cmds"
+rc = 0
+  line = curline.3()
+  curline = line.1()
+  interpret "parse var line" getspec
+
+  /* Kedit 5.0 kexx-only sometimes-works work-around:*/
+  /* interpret "imm" command */
+  interpret command
+
+  if rc <> 0 THEN "MSG Error" getspec "::>>" command
+
+  "LOCATE :"curline
+exit
+
+
+
+* Legal Stuff:
+*
+* MIT License
+* Copyright (c) 2024 Gordon, M.D. https://gofund.me/a04e971f  
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+
+* The above copyright notice, and this permission notice shall be included in all* 
+* copies or substantial portions of the Software.
+
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+*
