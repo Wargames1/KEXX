@@ -1,0 +1,51 @@
+* challw - mdg - 970815 - execute a change word cmd against all
+*                         lines including those above the current line.
+*                         Do not reposition file.
+parse arg args
+
+line = line.1()
+"TOP"
+if words(args) = 2 then
+   if left(args,1) <> right(args,1) then
+   do
+      parse var args w1 w2
+      args = '01'x || w1 || '01'x || w2 || '01'x
+   end
+
+"CHANGE WORD" args "* *"
+":"line
+ chall - mdg - 6/20/97 - execute a change command against all lines
+*                         including those above the current line.
+*                         Does not reposition file.
+parse arg w1 w2
+
+line = line.1()
+"TOP"
+args = '01'x || w1 || '01'x || w2 || '01'x
+
+"CHANGE" args "* *"
+":"line
+
+* Legal Stuff:
+*
+* MIT License
+* Copyright (c) 2024 Gordon, M.D. https://gofund.me/a04e971f  
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+
+* The above copyright notice, and this permission notice shall be included in all* 
+* copies or substantial portions of the Software.
+
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+*
