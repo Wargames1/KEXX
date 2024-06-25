@@ -1,0 +1,45 @@
+* multi.kex - mdg 1/7/93- Perform input on all lines below curline at once 
+parse arg char
+if \fileline() then
+do
+  "TEXT" char
+   exit
+end
+"SOS saveline"
+line = line.1()
+"SOS savecol"
+"TEXT" char
+do until rc \= 0
+   "LOCATE +1"
+   if rc = 0 then
+   do
+      "SOS restorecol"
+      "TEXT" char
+      "REFRESH"
+   end
+end
+"LOCATE :"line
+
+* Legal Stuff:
+*
+* MIT License
+* Copyright (c) 2024 Gordon, M.D. https://gofund.me/a04e971f  
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+
+* The above copyright notice, and this permission notice shall be included in all* 
+* copies or substantial portions of the Software.
+
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+*
