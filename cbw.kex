@@ -1,0 +1,72 @@
+* cbw.kex - mdg - 3/7/97 Execute "change word" command on a block.
+PARSE UPPER ARG word rest
+c_delim = '01'x
+
+if \block() then
+do
+   "EMSG CBW: No BLOCK Marked."
+   exit 9
+end
+if word = "WORD" then
+do
+   parse arg word source target
+   parse arg word args
+end
+else
+do
+   if word = "?" then signal -help
+   word = ""
+   parse arg source target
+   parse arg args
+end
+
+if length(source) == 0 then signal -help
+
+if length(args) > 3 then
+do
+   delim  = left(args,1)
+   non_delim = " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+   if pos(delim, non_delim) = 0 then  /* valid delimiter? */
+      if left(args,1) == right(args, 1) then
+      do
+         /* Ensure that delimiter appears exactly 3 times */
+         tryargs = args || c_delim
+         parse var tryargs delim +1 source (delim) target (delim) rest
+         if rest \= c_delim then /* No delimiter in args, assume space */
+            parse var args source target
+      end
+end
+
+"CHANGE WORD" c_delim || source || c_delim || target || c_delim "BLOCK *"
+
+exit RC
+
+help:
+   parse source me
+   MSG "CBW - change word in marked block of text. Format CBW <from> <to> or CBW /<from>/<to>/ where '/' is a delimeter."
+exit
+
+* Legal Stuff:
+*
+* MIT License
+* Copyright (c) 2024 Gordon, M.D. https://gofund.me/a04e971f  
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+
+* The above copyright notice, and this permission notice shall be included in all* 
+* copies or substantial portions of the Software.
+
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+*
+
