@@ -1,0 +1,133 @@
+* name.kex - mdg - 10/20/98 - find an entry in a name file, if its not there add it.
+arg cmd .  /* Parse out optional command */
+* examples
+*  NAME ADD fred 226-3232
+*  NAME fred  ---> fred 226-3232
+*  NAME DELETE fred
+*  NAME UPDATE fred 210-226-3232
+*  NAME VIEW fred   -> same as NAME fred
+*  NAME fred   matches all fred's in name.dat
+
+
+c_name_file = "C:\WINDOWS\DESKTOP\REX\NAMES.DAT"   /* THIS NEEDS TO BE A FILE YOU CAN ACCESS. */
+c_delim = '01'x
+"KEDIT" c_name_file
+if rc <> 0 then do
+  "Emsg" "name file '"c_name_file"' not found."
+  return
+end
+
+select
+      when cmd = "DELETE" then parse arg . name
+      when cmd = "ADD"    then parse arg . name
+      when cmd = "UPDATE" then parse arg . name
+      when cmd = "EDIT"   then parse arg . name
+      otherwise
+      do
+         cmd = "VIEW"
+         parse arg name
+      end
+end /* select */
+
+if name == "" then do
+   "emsg" "no name entered";
+   return
+end
+
+if cmd = "VIEW" then
+do
+   "NOMSG ALL" c_delim||name||c_delim
+
+   /* If name doesn't exist, allow automatic add. */
+   IF rc <> 0 then do
+      "QUIT"
+      "dialog /Not found '"name"', ADD?/ YESNO DEFB 1"
+      say dialog.2
+      if dialog.2 = "YES" then do
+         "KEDIT" c_name_file
+         "BOTTOM"
+         "INPUT" name date() time()
+         "FILE"
+      end
+   end
+   else
+      "CMSG QUIT"
+   return
+end
+
+if cmd = "ADD" then
+do
+   "BOTTOM"
+   "INPUT" name date() time()
+   "FILE"
+end
+
+if cmd = "DELETE" then
+do
+   "NOMSG ALL" c_delim||name||c_delim
+   IF rc = 0 then do
+      "TOP"
+      "MARK LINE"
+      "BOTTOM"
+      "MARK LINE"
+      "DIALOG /Delete block?/ YESNO DEFB 1"
+      if dialog.2 = "YES" then do
+                                  "DELETE BLOCK"
+                                  "EMSG" "Deleted '"name"'"
+                               end
+                          else "QUIT"
+      "FILE"
+   end
+   else do
+      "QUIT"
+      "EMSG" " Not found '"name"'"
+   end
+end
+
+if cmd = "UPDATE" | cmd = "EDIT" then
+do
+   "NOMSG ALL" c_delim||name||c_delim
+
+   /* If name doesn't exist, allow automatic add. */
+   IF rc <> 0 then do
+      "QUIT"
+      "dialog /Not found '"name"', ADD?/YESNO DEFB 1"
+      if dialog.2 = "YES" then do
+         "KEDIT" c_name_file
+         "BOTTOM"
+         "INPUT" name date() time()
+         "FILE"
+      end
+   end
+   else do
+      say "Edit names and FILE."
+      "CMSG" "FILE"
+   end
+end
+return
+
+
+
+* Legal Stuff:
+*
+* MIT License
+* Copyright (c) 2024 Gordon, M.D. https://gofund.me/a04e971f  
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+
+* The above copyright notice, and this permission notice shall be included in all* 
+* copies or substantial portions of the Software.
+
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+*
