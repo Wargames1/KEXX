@@ -1,4 +1,4 @@
-* mousecur.kex - mdg 11/17/94 - use mouse clicks to select lines in a file.
+* mousecur.kex - Gordon, M.D. - 11/17/94 - use mouse clicks to select lines in a file.
 define button1down "'extract /click';'cursor screen' click.2 click.3;'sos makecurr'"
 define button2down "'extract /click';'set curline on' click.2"
 set curline on 5
