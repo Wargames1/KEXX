@@ -1,4 +1,4 @@
-* pfx.kex - mdg 7/15/92 - prefix lines with a delimited string, Observe zone.
+* pfx.kex - Gordon, M.D. - 7/15/92 - prefix lines with a delimited string, Observe zone.
 * Format:  pfx /string/ target
 * Example: pfx /Before: / 10
 parse arg delim +1 string (delim) target
