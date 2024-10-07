@@ -1,0 +1,112 @@
+* creditCardCheck.kex - Gordon, M.D. - 7/27/2005 - calculate cost of a loan if put into savings at a given rate
+* Usage: creditCardCheck
+* Usage: creditCardCheck [amount] [rate] [interest] [months] [payment_percent] [delay]
+arg amount fee rate interest months payment_percent delay
+if amount="" then
+do
+   say "enter the amount of the loan"
+   pull amount
+end
+if fee = "" then
+do
+   say "enter the fee charged to get the money"
+   pull fee
+end
+if rate = "" then
+do
+   say "enter the interest rate charged to get the money (example 1.99 for 1.99 percent)"
+   pull rate
+end
+rate_monthly = (rate / 12) / 100
+if interest = "" then
+do
+   say "enter the expected interest on the savings account where the money will be held"
+   pull interest
+end
+interest_monthly = (interest / 12) / 100
+
+if months = "" then
+do
+   say "enter the number of months the money can be held in savings"
+   pull months
+end
+
+if payment_percent = "" then
+do
+   say "enter the percentage of the total that will be paid back each month (note 1/78 = 1.28205128205...)"
+   pull payment_percent
+end
+
+payment_percent = payment_percent / 100
+payment = 0
+
+if delay = "" then delay = 0
+/* Delay (optional) is the number of months money is earning interest for the lender but not the borrower */
+
+/* credit card issuing loans of this type charge an up front percentage. */
+/* is percentage usually has a maximum. example 4-percent up to $90.  This fee */
+/* is tacked onto the the loan amount. */
+
+say "amount="amount "fee="fee "rate="rate "interest="interest "months="months "payment percent="payment_percent "delay="delay
+
+amount_owed = amount + fee
+if delay > 0 then amount_saved = 0
+else
+   amount_saved = amount
+total_finance_charge = fee
+total_investment_return = 0
+
+total_payments = 0
+say "Month   Owed       Saved  TotalCharges TotalReturns Lost/Gained Payment TotalPayment"
+say "0   " dollar(amount_owed) dollar(amount_saved) dollar(total_finance_charge) dollar(total_investment_return) dollar((amount_saved - amount_owed)) dollar(payment) dollar(total_payment)
+
+
+do month = 1 to months
+   amount_saved = amount_saved + (amount_saved * interest_monthly)
+   if month = delay then amount_saved = amount_saved + amount /* optional, start saving after a delay */
+   total_investment_return  = total_investment_return + (amount_saved * interest_monthly)
+   payment = amount_owed * payment_percent
+   if month = 1 then payment = 0
+   total_payments = total_payments + payment
+   total_finance_charge = total_finance_charge + (amount_owed * rate_monthly)
+   amount_owed = (amount_owed + (amount_owed * rate_monthly)) - payment
+   amount_saved = amount_saved - payment
+   Say left(month,4) dollar(amount_owed) dollar(amount_saved) dollar(total_finance_charge) dollar(total_investment_return) dollar((amount_saved - amount_owed)) dollar(payment) dollar(total_payments)
+
+   if amount_owed <= 0 then leave
+end
+if amount_owed <= 0 then
+   say "Balance paid off."
+
+say "total payments made" total_payments
+EXIT
+
+dollar: procedure
+arg num
+if datatype(num,"n") = 0 then num = 0
+num = right(format(num,7,2),10)
+return num
+
+* Legal Stuff:
+*
+* MIT License
+* Copyright (c) 2024 Gordon, M.D. https://gofund.me/a04e971f  
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+
+* The above copyright notice, and this permission notice shall be included in all* 
+* copies or substantial portions of the Software.
+
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+*
